@@ -1,6 +1,6 @@
 import './styles/main.css'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import React, {useCallback, useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import {Calendar, DateLocalizer, momentLocalizer} from 'react-big-calendar'
 import moment from "moment"
@@ -13,21 +13,17 @@ export interface Event {
     allDay?: boolean;
 }
 
-export interface clickRef {
-    current: number;
-}
-
 export const TASKS_STORAGE_KEY = 'tasks';
 
 // @todo: gérer l'affichage du formulaire avec un clic bouton
 
 function App() {
-    const [title, setTitle]        = useState<string>('');
-    const [dueDate, setDueDate]    = useState<string>('');
-    const [message, setMessage]    = useState<string>('');
-    const [events, setEvents]      = useLocalStorage<Array<Event>>(TASKS_STORAGE_KEY, []);
-    const localizer: DateLocalizer = momentLocalizer(moment);
-    const clickRef                 = useRef<clickRef>(null);
+    const [title, setTitle]               = useState<string>('');
+    const [dueDate, setDueDate]           = useState<string>('');
+    const [message, setMessage]           = useState<string>('');
+    const [events, setEvents]             = useLocalStorage<Array<Event>>(TASKS_STORAGE_KEY, []);
+    const localizer: DateLocalizer        = momentLocalizer(moment);
+    let deletionTimeout: number | null    = null;
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -59,16 +55,17 @@ function App() {
 
     useEffect(() => {
         return () => {
-            window.clearTimeout(clickRef?.current)
+            window.clearTimeout(deletionTimeout ?? undefined);
         };
     }, []);
 
-    const handleDelete = useCallback((calEvent: { id: number; }) => {
-        window.clearTimeout(clickRef?.current);
-        clickRef.current = window.setTimeout(() => {
+    const handleDelete = (calEvent: { id: number; }) => {
+        window.clearTimeout(deletionTimeout ?? undefined);
+        deletionTimeout = window.setTimeout(() => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             window.confirm('Voulez-vous vraiment supprimer cette tâche ?') && setEvents(events.filter(event => event.id !== calEvent.id));
         }, 250);
-    }, []);
+    };
 
     return (
         <>
