@@ -10,6 +10,7 @@ export interface Event {
     title: string;
     start: Date;
     end: Date;
+    allDay?: boolean;
 }
 
 export const TASKS_STORAGE_KEY = 'tasks';
@@ -39,6 +40,7 @@ function App() {
             title: title,
             start: new Date(dueDate),
             end: new Date(dueDate),
+            allDay: true
         }]);
         setMessage('Tâche créée avec succès.');
 
