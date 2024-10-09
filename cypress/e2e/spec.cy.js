@@ -49,3 +49,23 @@ describe('Get existing tasks', () => {
         cy.get('.rbc-event-content').contains('ceci est un test !');
     });
 });
+
+describe('Delete task', () => {
+    before(() => {
+        cy.restoreLocalStorage('tasks');
+    });
+
+    it('Can delete a task.', () => {
+        cy.visit('/');
+
+        cy.get('.rbc-event-content').contains('ceci est un test !').dblclick();
+
+        cy.get('.rbc-event-content').should('not.exist');
+
+        cy.getAllLocalStorage()
+            .then(
+                ls => expect(JSON.parse(ls[Cypress.config().baseUrl].tasks)).to.deep.equal([])
+            )
+        ;
+    });
+});
