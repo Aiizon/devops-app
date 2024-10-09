@@ -2,9 +2,9 @@ name: Cypress Tests and deployment
 
 on:
   push:
-    branches: [ "main", "cd" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "main", "cd" ]
+    branches: [ "main" ]
 
 jobs:
   cypress:
