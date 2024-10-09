@@ -1,9 +1,13 @@
+// current date with time zeroed
+const todayShort = new Date().toISOString().slice(0, 10);
+const today = todayShort + 'T00:00:00.000Z';
+
 describe('Create task', () => {
     it('Can add a task with proper data.', () => {
         cy.visit('/');
 
         cy.get('input[name="name"]').type('ceci est un test !');
-        cy.get('input[name="dueDate"]').type('2000-01-01');
+        cy.get('input[name="dueDate"]').type(todayShort);
         cy.contains('Créer une tâche').click();
 
         cy.contains('Tâche créée avec succès.');
@@ -11,7 +15,7 @@ describe('Create task', () => {
 
         cy.getAllLocalStorage()
             .then(
-                ls => expect(JSON.parse(ls[Cypress.config().baseUrl].tasks)).to.deep.equal([{ title: 'ceci est un test !', dueDate: '2000-01-01' }])
+                ls => expect(JSON.parse(ls[Cypress.config().baseUrl].tasks)).to.deep.equal([{id: 0, title: 'ceci est un test !', start: today, end: today }])
             )
         ;
     });
