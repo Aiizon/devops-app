@@ -1,6 +1,7 @@
 import './styles/main.css'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
+import { useLocalStorage } from "@uidotdev/usehooks";
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import moment from "moment"
 
@@ -19,8 +20,8 @@ function App() {
     const [title, setTitle]     = useState<string>('');
     const [dueDate, setDueDate] = useState<string>('');
     const [message, setMessage] = useState<string>('');
-    const [events, setEvents]     = useState<Array<Event>>([])
-    const localizer = momentLocalizer(moment);
+    const [events, setEvents]   = useLocalStorage<Array<Event>>(TASKS_STORAGE_KEY, []);
+    const localizer             = momentLocalizer(moment);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -48,23 +49,6 @@ function App() {
             setMessage('');
         }, 10000);
     };
-
-    useEffect(() => {
-        const localStorageTasks: Array<Event> = JSON.parse(localStorage.getItem(TASKS_STORAGE_KEY) as string) || [];
-
-        setEvents(localStorageTasks.map((task, index) => {
-            return {
-                id: index,
-                title: task.title,
-                start: task.start,
-                end: task.end,
-            };
-        }));
-    }, []);
-
-    useEffect(() => {
-        localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(events));
-    }, [events]);
 
     return (
         <>
