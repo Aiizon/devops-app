@@ -14,7 +14,7 @@ describe('Create task', () => {
 
         cy.getAllLocalStorage()
             .then(
-                ls => expect(JSON.parse(ls[Cypress.config().baseUrl].tasks)).to.deep.equal([{id: 0, title: 'ceci est un test !', start: today, end: today }])
+                ls => expect(JSON.parse(ls[Cypress.config().baseUrl].tasks)).to.deep.equal([{id: 0, title: 'ceci est un test !', start: today, end: today, allDay: true}])
             )
         ;
 
