@@ -26,14 +26,15 @@ jobs:
         run: yarn install && yarn build
 
       - name: Build the Docker Image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           push: true
           tags: devops-app:${{ github.sha }}
           file: ./Dockerfile
+          context: .
 
       - name: Deploy to ACI
-        uses: azure/CLI@v1
+        uses: azure/CLI@v2
         with:
           azure_rm_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           command: |
