@@ -38,12 +38,11 @@ jobs:
       - name: Deploy to ACI
         uses: azure/CLI@v2
         with:
-          azure_rm_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          command: |
+          inlineScript: |
               az container group create \
                 --name devops-app \
-                --image aiizondevopsapp.azurecr.io/devops-app:${{ github.sha }} \
-                --resource-group appsvc_linux_centralus_basic \
-                --location West Europe \
+                --image ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/devops-app:${{ github.sha }} \
+                --resource-group ${{ secrets.AZURE_REGISTRY_GROUP }} \
+                --location ${{ secrets.AZURE_REGISTRY_REGION }} \
                 --ip-address Public \
                 --ports 80
