@@ -16,6 +16,9 @@ jobs:
               with:
                   creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+            - name: Compile the project
+              run: yarn build
+
             - name: Build the Docker Image
               uses: docker/build-push-action@v3
               with:
