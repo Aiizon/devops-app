@@ -2,7 +2,7 @@ name: Build and Deploy to ACI
 
 on:
   push:
-    branches: [main, azure-deployment]
+    branches: ["main", "azure-deployment"]
 
 jobs:
   build-and-deploy:
@@ -36,13 +36,14 @@ jobs:
           context: .
 
       - name: Deploy to ACI
-        uses: azure/CLI@v2
+        uses: azure/aci-deploy@v1
         with:
-          inlineScript: |
-              az container group create \
-                --name devops-app \
-                --image ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/devops-app:${{ github.sha }} \
-                --resource-group ${{ secrets.AZURE_REGISTRY_GROUP }} \
-                --location ${{ secrets.AZURE_REGISTRY_REGION }} \
-                --ip-address Public \
-                --ports 80
+          name: devops-app
+          resource-group: ${{ secrets.AZURE_REGISTRY_GROUP }}
+          dns-name-label: devops-app${{ github.run_number }}
+          image: ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/devops-app:${{ github.sha }}
+          registry-login-server: ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}
+          registry-username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
+          registry-password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+          location: ${{ secrets.AZURE_REGISTRY_REGION }}
+          ports: 80
