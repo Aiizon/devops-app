@@ -1,38 +1,46 @@
 name: Build and Deploy to ACI
 
 on:
-  push:
-    branches: [main, azure-deployment]
+    push:
+        branches: [main, azure-deployment]
 
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+    build-and-deploy:
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
 
-      - name: Authenticate to Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+            - name: Authenticate to Azure
+              uses: azure/login@v1
+              with:
+                  creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Build the Docker Image
-        uses: docker/build-push-action@v3
-        with:
-          push: true
-          tags: devops-app:${{ github.sha }}
-          file: ./Dockerfile
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 18
 
-      - name: Deploy to ACI
-        uses: azure/CLI@v1
-        with:
-          azure_rm_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          command: |
-              az container group create \
-                --name devops-app \
-                --image aiizondevopsapp.azurecr.io/devops-app:${{ github.sha }} \
-                --resource-group appsvc_linux_centralus_basic \
-                --location West Europe \
-                --ip-address Public \
-                --ports 80
+            - name: Compile the project
+              run: yarn install && yarn build
+
+            - name: Build the Docker Image
+              uses: docker/build-push-action@v3
+              with:
+                  push: true
+                  tags: devops-app:${{ github.sha }}
+                  file: ./Dockerfile
+
+            - name: Deploy to ACI
+              uses: azure/CLI@v1
+              with:
+                  azure_rm_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+                  command: |
+                      az container group create \
+                        --name devops-app \
+                        --image aiizondevopsapp.azurecr.io/devops-app:${{ github.sha }} \
+                        --resource-group appsvc_linux_centralus_basic \
+                        --location West Europe \
+                        --ip-address Public \
+                        --ports 80
