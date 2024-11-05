@@ -81,7 +81,7 @@ function App() {
 
             <hr className='grow bg-violet-400 my-12'/>
 
-            <div className='text-violet-500 text-md mb-4'>🛈 Double-cliquez sur une tache pour la supprimer</div>
+            <div className='text-emerald-500 text-md mb-4'>🛈 Double-cliquez sur une tache pour la supprimer</div>
             <Calendar
                 localizer={localizer}
                 events={events}
