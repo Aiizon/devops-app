@@ -1,0 +1,37 @@
+name: Build and Deploy to ACI
+
+on:
+    push:
+        branches: [main]
+
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Authenticate to Azure
+              uses: azure/login@v1
+              with:
+                  creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+            - name: Build the Docker Image
+              uses: docker/build-push-action@v3
+              with:
+                  push: true
+                  tags: devops-app:${{ github.sha }}
+                  file: ./Dockerfile
+
+            - name: Deploy to ACI
+              uses: azure/CLI@v1
+              with:
+                  azure_rm_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+                  command: |
+                      az container group create \
+                        --name devops-app \
+                        --image aiizondevopsapp.azurecr.io/devops-app:${{ github.sha }} \
+                        --resource-group appsvc_linux_centralus_basic \
+                        --location West Europe \
+                        --ip-address Public \
+                        --ports 80
