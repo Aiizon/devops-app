@@ -45,6 +45,8 @@ jobs:
   deploy-aci:
     runs-on: ubuntu-24.04
 
+    needs: build-image
+
     steps:
       - name: Authenticate to Azure
         uses: azure/login@v2
