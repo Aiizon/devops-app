@@ -59,7 +59,7 @@ jobs:
         with:
           name: devops-app
           resource-group: ${{ secrets.AZURE_REGISTRY_GROUP }}
-          dns-name-label: devops-app
+          dns-name-label: devops-app${{ github.run_number }}
           image: ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/devops-app:${{ github.sha }}
           registry-login-server: ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}
           registry-username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
