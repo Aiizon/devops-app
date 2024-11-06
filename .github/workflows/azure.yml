@@ -5,8 +5,8 @@ on:
     branches: ["main"]
 
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+  build-image:
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
@@ -39,8 +39,12 @@ jobs:
           tags: ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/devops-app:${{ github.sha }}
           file: ./Dockerfile
           context: .
+  deploy-aci:
+    runs-on: ubuntu-22.04
 
+    steps:
       - name: Deploy to ACI
+        id: deploy-aci
         uses: azure/aci-deploy@v1
         with:
           name: devops-app
@@ -52,3 +56,6 @@ jobs:
           registry-password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
           location: ${{ secrets.AZURE_REGISTRY_REGION }}
           ports: 80
+          cpu: '1'
+          memory: '0.5'
+        run: echo "The ACI was deployed at ${{ steps.deploy-aci.outputs.ip-address }}" >> $GITHUB_STEP_SUMMARY
