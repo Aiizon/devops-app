@@ -4,9 +4,15 @@ on:
   push:
     branches: ["main"]
 
+  workflow_run:
+    workflows:
+      - "Cypress tests"
+    types:
+      - completed
+
 jobs:
   build-image:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout
@@ -29,13 +35,15 @@ jobs:
 
       - name: Build the Docker Image
         uses: docker/build-push-action@v6
+        id: docker-build
         with:
           push: true
           tags: ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/devops-app:${{ github.sha }}
           file: ./Dockerfile
           context: .
+
   deploy-aci:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Authenticate to Azure
